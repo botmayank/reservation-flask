@@ -4,6 +4,9 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 
 # Initialize the Flask application
 app = Flask(__name__)
+server_date = {
+'server_date':"2014-11-21"
+}
 
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):
@@ -13,7 +16,7 @@ def allowed_file(filename):
 
 @app.route('/')
 def home():
-    return render_template('main.html')
+    return render_template('main.html',**server_date)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,110 @@
 <html lang="en">
   <head>
   <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+
+  function slotclick(value){
+      // Check if Blue
+      if(($('#slot'+value).css('background-color')) == 'rgb(60, 170, 214)'){
+      // Set Green while selecting
+      $('#slot'+value).css('background-color','rgb(4,203,14)');
+      $('#slot'+value).css('border','2px solid rgb(4,128,14)');
+
+      }
+      // If Green
+      else if (($('#slot'+value).css('background-color')) == 'rgb(4, 203, 14)'){
+        // Toggle back to blue
+        $('#slot'+value).css('background-color','rgb(60,170,214)');
+        $('#slot'+value).css('border','2px solid rgb(37,167,199)');
+
+      }
+      
+      // alert($('#res_date').val());
+    }
+
+  function res_date_chosen(){
+    // alert($('#res_date').val());
+
+    for(var i=0;i<24;++i){
+      // Set Blue
+      $('#slot'+i).css('background-color','rgb(60, 170, 214)');
+      $('#slot'+i).css('border','2px solid rgb(37,167,199)');
+      $('#slot'+i).prop('disabled',false);
+    }
+
+    $.post('/get_registration/',{date_reserved:$('#res_date').val()},function(result,status){
+        blocked_slots=result.split(',');
+        for (var i=0; i< blocked_slots.length; i++){
+          // RED
+          $('#slot'+i).css('background-color','#FA5858');
+          $('#slot'+i).css('border','#8A0808');
+          $('#slot'+i).prop('disabled',true);
+        }
+      });
+  }
+
+  function reserve(){
+
+
+  }  
+    $(document).ready(function(){
+
+      $.post('/cluster_details/',{data:'for_registration'},function(result,status){
+
+        data_formatted = $.parseJSON(result);
+        cluster_numbers = data_formatted['clusternumbers'].split(',');
+
+        var html = '<select id="selectlist_cluster">';
+        for(var i=0;i<cluster_numbers.length;i++){
+          html+='<option value = "'+cluster_numbers[i]+'">'+cluster_numbers[i]+'</option>';
+        }
+        html+='</select>';
+        $(html).appendTo('#select_cluster');
+
+
+      }
+
+    );
+
+      $.post('/get_registration/',{date_reserved:'{{server_date}}'},function(result,status){
+        blocked_slots=result.split(',');
+        for (var i=0; i< blocked_slots.length; i++){
+          // RED
+          $('#slot'+i).css('background-color','#FA5858');
+          $('#slot'+i).css('border','#8A0808');
+          $('#slot'+i).prop('disabled',true);
+        }
+      }
+
+    );
+      
+      //Table for Reservations
+      // var titledata = [['NodeNum', 'Status',]];
+      var html = '<table><tbody>';
+      for (var i = 0, n=1, rowNum = 4; i < rowNum; ++i) {
+        html += '<tr>';
+        for (var j = 0, colNum = 6; j < colNum; ++j,++n ) {
+         
+            html += '<td><button class="formButton" onclick="slotclick('+n+')" id="slot'+n+'">'+ n +'</button></td>';
+          
+        }
+
+        html += "</tr>";
+        }
+      html += '</tbody></table>';
+      $(html).appendTo('#res_table');
+    });
+
+
+
+      </script>
   </head>
+
+
+
+
+
   <body>
     <div class="container">
       <div class="header">
@@ -11,8 +114,14 @@
       </div>
       <hr/>
       <div>
-        <a href="/reserve" class="formButton" title="Login">Log in to Testbed</a>
-              
+        Choose a date:
+        <input type="date" id="res_date" value="{{server_date}}" onchange="res_date_chosen()"></input>
+        Choose a cluster:
+        <div id="select_cluster"></div>
+        <div id="res_table">Slots:</div>
+      </br>
+        <a href="/reserve" class="formButton" title="Reserve">Reserve slots</a>
+                      
        </div>  
       </form>
       </div>

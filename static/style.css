@@ -7,7 +7,8 @@
   -moz-border-radius:13px;
   -webkit-border-radius:13px;
   border-radius:13px;
-  border:2px solid #25a7c7;
+  border:2px solid #25a7c7; 
+  /*rgb(37,167,199)*/
   display:inline-block;
   cursor:pointer;
   color:#ffffff;
